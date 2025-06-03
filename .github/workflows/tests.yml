@@ -41,3 +41,7 @@ jobs:
       - name: Run static analysis
         run: composer stan
         if: matrix.php-version == '8.4'
+
+      - name: Check code style
+        run: PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix --dry-run --diff
+        if: matrix.php-version == '8.4'
