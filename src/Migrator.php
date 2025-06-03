@@ -162,6 +162,10 @@ class Migrator
     private function migratePHPFile(string $file): int
     {
         $content = F::read($file);
+        if ($content === false) {
+            return 0;
+        }
+        
         $replacements = 0;
 
         // Pattern to match t(), tc(), tt() function calls
@@ -180,6 +184,10 @@ class Migrator
             
             return $matches[0];
         }, $content);
+        
+        if ($newContent === null) {
+            return 0;
+        }
 
         if ($replacements > 0) {
             F::write($file, $newContent);
@@ -192,6 +200,10 @@ class Migrator
     {
         try {
             $content = F::read($file);
+            if ($content === false) {
+                return 0;
+            }
+            
             $replacements = 0;
             $translatableFields = [
                 'label', 'title', 'help', 'placeholder', 'empty',
@@ -287,6 +299,10 @@ class Migrator
     private function previewPHPFileChanges(string $file): array
     {
         $content = F::read($file);
+        if ($content === false) {
+            return [];
+        }
+        
         $changes = [];
         $lines = explode("\n", $content);
 
@@ -314,6 +330,10 @@ class Migrator
     {
         try {
             $content = F::read($file);
+            if ($content === false) {
+                return [];
+            }
+            
             $changes = [];
             $translatableFields = [
                 'label', 'title', 'help', 'placeholder', 'empty',

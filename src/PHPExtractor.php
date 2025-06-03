@@ -29,6 +29,9 @@ class PHPExtractor
 		}
 
 		$code = file_get_contents($file);
+		if ($code === false) {
+			return [];
+		}
 
 		try {
 			$ast = $this->parser->parse($code);

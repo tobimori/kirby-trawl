@@ -1,0 +1,16 @@
+parameters:
+	level: 7
+	paths:
+		- src
+	excludePaths:
+		- tests
+	ignoreErrors:
+		- '#type has no value type specified in iterable type array#'
+		- '#has parameter .* with no value type specified in iterable type array#'
+		- '#Access to an undefined property PhpParser\\Node\\Arg\|PhpParser\\Node\\VariadicPlaceholder::\$value#'
+		- '#Property .* is never read, only written#'
+		- '#Method .* should return .* but return statement is missing#'
+		- '#Property .* has no type specified#'
+		- '#Method .* has parameter .* with no type specified#'
+	bootstrapFiles:
+		- vendor/autoload.php

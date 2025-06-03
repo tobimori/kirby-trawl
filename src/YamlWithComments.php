@@ -13,6 +13,10 @@ class YamlWithComments
     public static function read(string $file): array
     {
         $content = F::read($file);
+        if ($content === false) {
+            return [];
+        }
+        
         $data = Yaml::decode($content);
         
         // Store the original content with comments
