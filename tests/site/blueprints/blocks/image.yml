@@ -1,0 +1,14 @@
+name: Image Block
+icon: image
+preview: image
+
+fields:
+  image:
+    label: Image
+    type: files
+    max: 1
+    
+  alt:
+    label: Alt Text
+    type: text
+    help: Describe the image for accessibility

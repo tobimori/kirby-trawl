@@ -1,28 +1,48 @@
 {
-  "name": "tobimori/kirby-trawl",
-  "description": "Automatic translation extraction for Kirby CMS",
-  "type": "kirby-plugin",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Tobias Möritz",
-      "email": "tobias@moeritz.io"
-    }
-  ],
-  "require": {
-    "php": ">=8.0",
-    "getkirby/composer-installer": "^1.2",
-    "nikic/php-parser": "^4.0 || ^5.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "tobimori\\Trawl\\": "src/"
-    }
-  },
-  "config": {
-    "optimize-autoloader": true,
-    "allow-plugins": {
-      "getkirby/composer-installer": true
-    }
-  }
+	"name": "tobimori/kirby-trawl",
+	"description": "Automatic translation extraction for Kirby CMS",
+	"type": "kirby-plugin",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Tobias Möritz",
+			"email": "tobias@moeritz.io"
+		}
+	],
+	"minimum-stability": "rc",
+	"require": {
+		"php": ">=8.0",
+		"getkirby/composer-installer": "^1.2",
+		"nikic/php-parser": "^4.0 || ^5.0"
+	},
+	"require-dev": {
+		"getkirby/cms": "^5.0",
+		"pestphp/pest": "^2.0",
+		"pestphp/pest-plugin-type-coverage": "^2.0",
+		"phpstan/phpstan": "^1.10",
+		"laravel/pint": "^1.13"
+	},
+	"autoload": {
+		"psr-4": {
+			"tobimori\\Trawl\\": "src/"
+		}
+	},
+	"scripts": {
+		"test": "pest --profile",
+		"stan": "phpstan analyse",
+		"fix": "pint",
+		"post-autoload-dump": [
+			"@php ./vendor/bin/pest --init"
+		]
+	},
+	"extra": {
+		"kirby-cms-path": false
+	},
+	"config": {
+		"optimize-autoloader": true,
+		"allow-plugins": {
+			"getkirby/composer-installer": true,
+			"pestphp/pest-plugin": true
+		}
+	}
 }

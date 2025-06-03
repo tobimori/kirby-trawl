@@ -1,0 +1,9 @@
+name: Text Block
+icon: text
+preview: text
+
+fields:
+  text:
+    label: Text Content
+    type: writer
+    placeholder: Enter your text here...

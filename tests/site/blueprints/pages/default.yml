@@ -1,0 +1,27 @@
+title: Page
+
+tabs:
+  content:
+    label: Content
+    fields:
+      title:
+        label: Title
+        type: text
+        required: true
+
+      text:
+        label: Text
+        type: textarea
+
+      blocks:
+        label: Content Blocks
+        type: blocks
+        fieldsets:
+          - text
+
+      status:
+        label: Status
+        type: select
+        options:
+          draft: Draft
+          published: Published
