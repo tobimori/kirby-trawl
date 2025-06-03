@@ -34,7 +34,7 @@ return [
 				foreach ($missing as $language => $keys) {
 					$cli->br();
 					$cli->out("Language: $language");
-					$cli->out("Missing: " . count($keys) . " translations");
+					$cli->out('Missing: ' . count($keys) . ' translations');
 
 					foreach ($keys as $key) {
 						$cli->out("  ❌ $key");
@@ -55,7 +55,7 @@ return [
 				foreach ($unused as $language => $keys) {
 					$cli->br();
 					$cli->out("Language: $language");
-					$cli->out("Unused: " . count($keys) . " translations");
+					$cli->out('Unused: ' . count($keys) . ' translations');
 
 					foreach ($keys as $key) {
 						$cli->out("  ⚠️  $key");

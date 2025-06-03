@@ -39,16 +39,59 @@ class BlueprintExtractor
 		foreach ($data as $key => $value) {
 			$currentPath = $path ? "$path.$key" : $key;
 
-			if (is_string($value) && in_array($key, $this->translatableFields, true)) {
+			// Handle special * key for language variables
+			if ($key === '*' && is_string($value)) {
+				if (!$this->shouldSkipValue($value)) {
+					// Check if this is a KQL expression with translation functions
+					if (str_contains($value, '{{') && str_contains($value, '}}')) {
+						// Extract strings from t(), tc(), and tt() functions
+						$extracted = $this->extractFromKQL($value);
+						foreach ($extracted as $extractedKey) {
+							$translations[] = [
+								'key' => $extractedKey,
+								'file' => $file,
+								'path' => $currentPath,
+								'field' => '*',
+								'context' => $this->getContextFromPath($path),
+							];
+						}
+					} else {
+						// Regular language variable
+						$translations[] = [
+							'key' => $value,
+							'file' => $file,
+							'path' => $currentPath,
+							'field' => '*',
+							'context' => $this->getContextFromPath($path),
+						];
+					}
+				}
+			} elseif (is_string($value) && in_array($key, $this->translatableFields, true)) {
 				// Skip empty strings, whitespace-only strings, and KQL expressions
 				if (!$this->shouldSkipValue($value)) {
-					$translations[] = [
-						'key' => $value,
-						'file' => $file,
-						'path' => $currentPath,
-						'field' => $key,
-						'context' => $this->getContextFromPath($currentPath),
-					];
+					// Check if this is a KQL expression with translation functions
+					if (str_contains($value, '{{') && str_contains($value, '}}')) {
+						// Extract strings from t() and tc() functions
+						$extracted = $this->extractFromKQL($value);
+						foreach ($extracted as $extractedKey) {
+							$translations[] = [
+								'key' => $extractedKey,
+								'file' => $file,
+								'path' => $currentPath,
+								'field' => $key,
+								'context' => $this->getContextFromPath($currentPath),
+							];
+						}
+					} else {
+						// Regular translatable string
+						$translations[] = [
+							'key' => $value,
+							'file' => $file,
+							'path' => $currentPath,
+							'field' => $key,
+							'context' => $this->getContextFromPath($currentPath),
+						];
+					}
 				}
 			} elseif (is_array($value)) {
 				// Recursively extract from nested arrays
@@ -60,6 +103,30 @@ class BlueprintExtractor
 		return $translations;
 	}
 
+	private function extractFromKQL(string $value): array
+	{
+		$translations = [];
+
+		// Extract first string parameter from t(), tc(), and tt() functions
+		// All three functions can have additional parameters after the first string
+		// Handle both double and single quotes, including escaped quotes
+		if (preg_match_all('/\b(?:t|tc|tt)\s*\(\s*"((?:[^"\\\\]|\\\\.)*)"|\'((?:[^\'\\\\]|\\\\.)*)\'/', $value, $matches)) {
+			// Combine matches from both quote types and filter out empty ones
+			$doubleQuoteMatches = array_filter($matches[1]);
+			$singleQuoteMatches = array_filter($matches[2]);
+			$allMatches = array_merge($doubleQuoteMatches, $singleQuoteMatches);
+
+			// Unescape the strings
+			$unescapedMatches = array_map(function ($str) {
+				return stripcslashes($str);
+			}, $allMatches);
+
+			$translations = array_merge($translations, $unescapedMatches);
+		}
+
+		return array_unique($translations);
+	}
+
 	private function shouldSkipValue(string $value): bool
 	{
 		// Skip empty or whitespace-only strings
@@ -67,13 +134,14 @@ class BlueprintExtractor
 			return true;
 		}
 
-		// Skip KQL expressions (contain {{ }})
-		if (preg_match('/\{\{.*\}\}/', $value)) {
-			return true;
-		}
-
-		// Skip values that start with / and contain KQL (like /{{ page.slug }})
-		if (str_starts_with($value, '/') && str_contains($value, '{{')) {
+		// Check if value contains KQL expressions
+		if (str_contains($value, '{{') && str_contains($value, '}}')) {
+			// Check if it contains any translation functions (t, tc, or tt)
+			if (preg_match('/\b(?:t|tc|tt)\s*\(/', $value)) {
+				// This value contains translatable strings, don't skip
+				return false;
+			}
+			// Skip other KQL expressions
 			return true;
 		}
 

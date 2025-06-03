@@ -3,11 +3,10 @@
 namespace tobimori\Trawl;
 
 use PhpParser\Node;
-use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use PhpParser\ParserFactory;
 use PhpParser\Parser;
+use PhpParser\ParserFactory;
 
 class PHPExtractor
 {
@@ -42,7 +41,7 @@ class PHPExtractor
 
 			$translationsRef = &$this->translations;
 			$traverser = new NodeTraverser();
-			$visitor = new class($translationsRef) extends NodeVisitorAbstract {
+			$visitor = new class ($translationsRef) extends NodeVisitorAbstract {
 				private $translations;
 
 				public function __construct(&$translations)
@@ -84,7 +83,7 @@ class PHPExtractor
 					}
 				}
 
-				private function getContext(Node\Expr\FuncCall $node, string $functionName): ?array
+				private function getContext(Node\Expr\FuncCall $node, string $functionName): array|null
 				{
 					$context = [];
 
@@ -108,7 +107,7 @@ class PHPExtractor
 					return empty($context) ? null : $context;
 				}
 
-				private function extractConcatenatedString(Node $node): ?string
+				private function extractConcatenatedString(Node $node): string|null
 				{
 					if ($node instanceof Node\Scalar\String_) {
 						return $node->value;

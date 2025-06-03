@@ -4,14 +4,14 @@ namespace tobimori\Trawl;
 
 use Kirby\Data\Json;
 use Kirby\Data\Yaml;
-use Kirby\Filesystem\F;
 use Kirby\Filesystem\Dir;
+use Kirby\Filesystem\F;
 
 class TranslationManager
 {
 	private string $outputPath;
 	private string $outputFormat;
-	private ?string $sourceLanguage;
+	private string|null $sourceLanguage;
 	private array $languages;
 
 	public function __construct(array $options = [])

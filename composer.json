@@ -20,7 +20,7 @@
 		"pestphp/pest": "^2.0",
 		"pestphp/pest-plugin-type-coverage": "^2.0",
 		"phpstan/phpstan": "^1.10",
-		"laravel/pint": "^1.13"
+		"friendsofphp/php-cs-fixer": "^3.75"
 	},
 	"autoload": {
 		"psr-4": {
@@ -30,10 +30,7 @@
 	"scripts": {
 		"test": "pest --profile",
 		"stan": "phpstan analyse",
-		"fix": "pint",
-		"post-autoload-dump": [
-			"@php ./vendor/bin/pest --init"
-		]
+		"fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix"
 	},
 	"extra": {
 		"kirby-cms-path": false

@@ -42,14 +42,14 @@ class Extractor
 		}
 
 		// Extract from PHP files
-		$phpFiles = array_filter($files, fn($file) => str_ends_with($file, '.php'));
+		$phpFiles = array_filter($files, fn ($file) => str_ends_with($file, '.php'));
 		if (!empty($phpFiles)) {
 			$phpTranslations = $this->phpExtractor->extractFromFiles($phpFiles);
 			$translations = array_merge($translations, $phpTranslations);
 		}
 
 		// Extract from Blueprint files
-		$blueprintFiles = array_filter($files, fn($file) => str_ends_with($file, '.yml'));
+		$blueprintFiles = array_filter($files, fn ($file) => str_ends_with($file, '.yml'));
 		if (!empty($blueprintFiles)) {
 			$blueprintTranslations = $this->blueprintExtractor->extractFromFiles($blueprintFiles);
 			$translations = array_merge($translations, $blueprintTranslations);

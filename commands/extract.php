@@ -44,9 +44,9 @@ return [
 			$cli->success("Found {$stats['total']} translation strings ({$stats['unique']} unique)");
 
 			if ($cli->arg('verbose')) {
-				$cli->out("Files scanned: " . count($stats['byFile']));
+				$cli->out('Files scanned: ' . count($stats['byFile']));
 				foreach ($stats['byFile'] as $file => $count) {
-					$cli->out("  - " . basename($file) . ": $count");
+					$cli->out('  - ' . basename($file) . ": $count");
 				}
 			}
 
@@ -81,13 +81,13 @@ return [
 				$cli->br();
 				$cli->warning('Missing translations:');
 				foreach ($missing as $language => $keys) {
-					$cli->out("$language: " . count($keys) . " missing");
+					$cli->out("$language: " . count($keys) . ' missing');
 					if ($cli->arg('verbose')) {
 						foreach (array_slice($keys, 0, 10) as $key) {
 							$cli->out("  - $key");
 						}
 						if (count($keys) > 10) {
-							$cli->out("  ... and " . (count($keys) - 10) . " more");
+							$cli->out('  ... and ' . (count($keys) - 10) . ' more');
 						}
 					}
 				}
@@ -99,13 +99,13 @@ return [
 				$cli->br();
 				$cli->warning('Unused translations:');
 				foreach ($unused as $language => $keys) {
-					$cli->out("$language: " . count($keys) . " unused");
+					$cli->out("$language: " . count($keys) . ' unused');
 					if ($cli->arg('verbose')) {
 						foreach (array_slice($keys, 0, 10) as $key) {
 							$cli->out("  - $key");
 						}
 						if (count($keys) > 10) {
-							$cli->out("  ... and " . (count($keys) - 10) . " more");
+							$cli->out('  ... and ' . (count($keys) - 10) . ' more');
 						}
 					}
 				}
