@@ -41,7 +41,7 @@ class PHPExtractor
 
 			$translationsRef = &$this->translations;
 			$traverser = new NodeTraverser();
-			$visitor = new class ($translationsRef) extends NodeVisitorAbstract {
+			$visitor = new class($translationsRef) extends NodeVisitorAbstract {
 				private $translations;
 
 				public function __construct(&$translations)
@@ -128,7 +128,6 @@ class PHPExtractor
 			$traverser->addVisitor($visitor);
 			$traverser->traverse($ast);
 		} catch (\Exception $e) {
-			// Log parse errors if needed
 		}
 
 		return $this->translations;
