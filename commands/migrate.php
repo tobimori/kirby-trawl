@@ -27,7 +27,6 @@ return [
 		$cli->info('Migration from key-based to value-based translations');
 		$cli->br();
 
-		// Check git status
 		exec('git status --porcelain 2>&1', $output, $returnCode);
 
 		if ($returnCode !== 0) {
@@ -46,13 +45,11 @@ return [
 		$cli->br();
 
 		try {
-			// Get current translation files
 			$translationsPath = kirby()->root('site') . '/translations';
 			$options = kirby()->option('tobimori.trawl', []);
 			$languages = $options['languages'] ?? ['de', 'en'];
 			$sourceLanguage = $options['sourceLanguage'] ?? 'en';
 
-			// Create migration map from existing translations
 			$migrationMap = [];
 
 			foreach ($languages as $lang) {
@@ -72,7 +69,6 @@ return [
 						continue;
 					}
 
-					// Use the source language value as the new key
 					if ($lang === $sourceLanguage && !empty($value)) {
 						$migrationMap[$key] = $value;
 					}
@@ -87,7 +83,6 @@ return [
 			$cli->out('Found ' . count($migrationMap) . ' translation keys to migrate.');
 			$cli->br();
 
-			// Show preview
 			$cli->out('Preview of migration:');
 			$preview = array_slice($migrationMap, 0, 5, true);
 			foreach ($preview as $oldKey => $newKey) {
@@ -108,10 +103,8 @@ return [
 				return;
 			}
 
-			// Create migrator instance
 			$migrator = new Migrator($migrationMap);
 
-			// Find all PHP and blueprint files
 			$extractor = new Extractor($options);
 			$affectedFiles = $migrator->findAffectedFiles($options);
 
@@ -121,7 +114,6 @@ return [
 			$cli->br();
 
 			if (!$cli->arg('dry-run')) {
-				// Perform migration
 				$results = $migrator->migrate($affectedFiles);
 
 				$cli->success('Migration completed!');
@@ -130,11 +122,9 @@ return [
 				$cli->out('  Blueprint files: ' . $results['blueprint']);
 				$cli->out('  Total replacements: ' . $results['replacements']);
 
-				// Update translation files
 				$cli->br();
 				$cli->info('Updating translation files...');
 
-				// Run extract with clean to generate new translation files
 				try {
 					CLI::command('trawl:extract', '--clean');
 				} catch (\Exception $e) {
@@ -146,7 +136,6 @@ return [
 				$cli->success('Migration completed successfully!');
 				$cli->info('Please review the changes and test your application.');
 			} else {
-				// Show what would be changed
 				$changes = $migrator->previewChanges($affectedFiles);
 
 				foreach ($changes as $file => $fileChanges) {

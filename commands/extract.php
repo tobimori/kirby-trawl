@@ -23,10 +23,8 @@ return [
 	'command' => static function (CLI $cli): void {
 		$cli->info('Starting translation extraction...');
 
-		// Get plugin options
 		$options = kirby()->option('tobimori.trawl', []);
 
-		// Show current configuration
 		$cli->out('Configuration:');
 		$cli->out('  Source language: ' . ($options['sourceLanguage'] ?? 'none'));
 		$cli->out('  Output format: ' . ($options['outputFormat'] ?? 'json'));
@@ -35,11 +33,9 @@ return [
 		$cli->br();
 
 		try {
-			// Create extractor and extract translations
 			$extractor = new Extractor($options);
 			$translations = $extractor->extract();
 
-			// Show extraction stats
 			$stats = $extractor->getStats($translations);
 			$cli->success("Found {$stats['total']} translation strings ({$stats['unique']} unique)");
 
@@ -57,13 +53,11 @@ return [
 				}
 			}
 
-			// Generate translation files
 			$cli->br();
 			$cli->info('Generating translation files...');
 
 			$manager = new TranslationManager($options);
 
-			// Check if clean flag is set
 			if ($cli->arg('clean')) {
 				$cli->info('Cleaning mode enabled - removing unused translations');
 				$generatedFiles = $manager->generateTranslationsClean($translations);
@@ -75,7 +69,6 @@ return [
 				$cli->success("Generated: $file");
 			}
 
-			// Check for missing translations
 			$missing = $manager->getMissingTranslations($translations);
 			if (!empty($missing)) {
 				$cli->br();
@@ -93,7 +86,6 @@ return [
 				}
 			}
 
-			// Check for unused translations
 			$unused = $manager->getUnusedTranslations($translations);
 			if (!empty($unused)) {
 				$cli->br();

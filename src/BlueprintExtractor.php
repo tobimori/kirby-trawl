@@ -141,6 +141,7 @@ class BlueprintExtractor
 				// This value contains translatable strings, don't skip
 				return false;
 			}
+
 			// Skip other KQL expressions
 			return true;
 		}

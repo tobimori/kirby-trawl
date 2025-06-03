@@ -10,11 +10,9 @@ return [
 	'command' => static function (CLI $cli): void {
 		$cli->info('Validating translations...');
 
-		// Get plugin options
 		$options = kirby()->option('tobimori.trawl', []);
 
 		try {
-			// Extract current translations from code
 			$extractor = new Extractor($options);
 			$translations = $extractor->extract();
 
@@ -24,7 +22,6 @@ return [
 
 			$manager = new TranslationManager($options);
 
-			// Check for missing translations
 			$missing = $manager->getMissingTranslations($translations);
 			$hasIssues = false;
 
@@ -46,7 +43,6 @@ return [
 
 			$cli->br();
 
-			// Check for unused translations
 			$unused = $manager->getUnusedTranslations($translations);
 
 			if (!empty($unused)) {
