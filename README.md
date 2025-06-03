@@ -95,7 +95,7 @@ Add Trawl to your build process to keep translations in sync. Check the [Baukast
 
 - Blueprint fields: `label`, `title`, `help`, `placeholder`, `empty`, `info`, `text`, `description`, `confirm`
 - Language variables: `*: translation.key` in options
-- KQL expressions: `{{ t("key") }}`, `{{ tc("key", "fallback") }}`, `{{ tt("singular", "plural", count) }}`
+- KQL expressions: `{{ t("key") }}`, `{{ tc("key") }}`, `{{ tt("key") }}`
 - PHP functions: `t()`, `tc()`, `tt()`
 
 ## License
