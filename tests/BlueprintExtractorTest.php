@@ -537,6 +537,14 @@ fields:
 	rmdir($tempDir . '/blueprints');
 	rmdir($tempDir);
 
+	// restore the test kirby instance
+	new \Kirby\Cms\App([
+		'roots' => [
+			'index' => __DIR__,
+			'base' => __DIR__,
+		],
+	]);
+
 	// blueprint reference should be filtered out
 	expect($translations)->not->toContain('fields/writer');
 	// normal translations should still be extracted
