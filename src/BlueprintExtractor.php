@@ -158,16 +158,16 @@ class BlueprintExtractor
 
 	private function isBlueprint(string $value): bool
 	{
-		if (!isset(static::$blueprintCache[$value])) {
+		if (!isset(self::$blueprintCache[$value])) {
 			try {
 				Blueprint::find($value);
-				static::$blueprintCache[$value] = true;
+				self::$blueprintCache[$value] = true;
 			} catch (\Exception) {
-				static::$blueprintCache[$value] = false;
+				self::$blueprintCache[$value] = false;
 			}
 		}
 
-		return static::$blueprintCache[$value];
+		return self::$blueprintCache[$value];
 	}
 
 	private function getContextFromPath(string $path): array
