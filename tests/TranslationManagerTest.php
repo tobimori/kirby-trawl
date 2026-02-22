@@ -206,3 +206,102 @@ test('TranslationManager creates output directory if it does not exist', functio
 	rmdir(dirname($tempDir));
 	rmdir(dirname($tempDir, 2));
 });
+
+test('TranslationManager scaffolds tc() keys as arrays', function () {
+	$tempDir = sys_get_temp_dir() . '/trawl_test_' . uniqid();
+	mkdir($tempDir);
+
+	$extractedTranslations = [
+		['key' => 'Hello World', 'function' => 't', 'line' => 1, 'context' => []],
+		['key' => '{{ count }} members', 'function' => 'tc', 'line' => 2, 'context' => ['plural' => true]],
+	];
+
+	$manager = new TranslationManager([
+		'languages' => ['en', 'de'],
+		'outputPath' => $tempDir,
+		'outputFormat' => 'json',
+		'sourceLanguage' => 'en',
+	]);
+	$manager->generateTranslations($extractedTranslations);
+
+	$enContent = json_decode(file_get_contents($tempDir . '/en.json'), true);
+	$deContent = json_decode(file_get_contents($tempDir . '/de.json'), true);
+
+	// regular key scaffolds as string
+	expect($enContent['Hello World'])->toBe('Hello World');
+	expect($deContent['Hello World'])->toBe('');
+
+	// plural key scaffolds as array
+	expect($enContent['{{ count }} members'])->toBe(['', '{{ count }} members']);
+	expect($deContent['{{ count }} members'])->toBe(['', '']);
+
+	// Cleanup
+	unlink($tempDir . '/en.json');
+	unlink($tempDir . '/de.json');
+	rmdir($tempDir);
+});
+
+test('TranslationManager preserves existing plural translations', function () {
+	$tempDir = sys_get_temp_dir() . '/trawl_test_' . uniqid();
+	mkdir($tempDir);
+
+	// pre-populate with a translated plural
+	$existing = [
+		'{{ count }} members' => ['{{ count }} Mitglied', '{{ count }} Mitglieder'],
+	];
+	file_put_contents($tempDir . '/de.json', json_encode($existing, JSON_PRETTY_PRINT));
+
+	$extractedTranslations = [
+		['key' => '{{ count }} members', 'function' => 'tc', 'line' => 1, 'context' => ['plural' => true]],
+	];
+
+	$manager = new TranslationManager([
+		'languages' => ['de'],
+		'outputPath' => $tempDir,
+		'outputFormat' => 'json',
+	]);
+	$manager->generateTranslations($extractedTranslations);
+
+	$deContent = json_decode(file_get_contents($tempDir . '/de.json'), true);
+
+	// existing translation should be preserved
+	expect($deContent['{{ count }} members'])->toBe(['{{ count }} Mitglied', '{{ count }} Mitglieder']);
+
+	// Cleanup
+	unlink($tempDir . '/de.json');
+	rmdir($tempDir);
+});
+
+test('TranslationManager treats empty plural arrays as missing', function () {
+	$tempDir = sys_get_temp_dir() . '/trawl_test_' . uniqid();
+	mkdir($tempDir);
+
+	// file has the key but all elements are empty
+	$existing = [
+		'{{ count }} members' => ['', ''],
+		'Hello' => 'Hallo',
+	];
+	file_put_contents($tempDir . '/de.json', json_encode($existing, JSON_PRETTY_PRINT));
+
+	$extractedTranslations = [
+		['key' => '{{ count }} members', 'function' => 'tc', 'line' => 1, 'context' => ['plural' => true]],
+		['key' => 'Hello', 'function' => 't', 'line' => 2, 'context' => []],
+	];
+
+	$manager = new TranslationManager([
+		'languages' => ['de'],
+		'outputPath' => $tempDir,
+		'outputFormat' => 'json',
+	]);
+
+	$missing = $manager->getMissingTranslations($extractedTranslations);
+
+	// empty plural array should be reported as missing
+	expect($missing['de'])->toContain('{{ count }} members');
+	// translated key should not be missing
+	expect($missing['de'])->not->toContain('Hello');
+
+	// Cleanup
+	unlink($tempDir . '/de.json');
+	rmdir($tempDir);
+});

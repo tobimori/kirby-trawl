@@ -495,3 +495,52 @@ fields:
 	expect($translations)->toContain('simple.key');
 	expect($translations)->toContain('item');
 });
+
+test('BlueprintExtractor skips blueprint extends references', function () {
+	$tempDir = sys_get_temp_dir() . '/trawl_bp_test_' . uniqid();
+	mkdir($tempDir);
+	mkdir($tempDir . '/blueprints', recursive: true);
+	mkdir($tempDir . '/blueprints/fields', recursive: true);
+
+	// create a blueprint that Blueprint::find() can resolve
+	file_put_contents($tempDir . '/blueprints/fields/writer.yml', "type: writer\nlabel: Writer");
+
+	new \Kirby\Cms\App([
+		'roots' => [
+			'index' => $tempDir,
+			'blueprints' => $tempDir . '/blueprints',
+		],
+	]);
+
+	$yaml = '
+fields:
+  content:
+    label: Content
+    type: writer
+    text: fields/writer
+  description:
+    label: Description
+    type: textarea
+    help: Enter a description
+';
+
+	$tempFile = sys_get_temp_dir() . '/test_' . uniqid() . '.yml';
+	file_put_contents($tempFile, $yaml);
+
+	$extractor = new BlueprintExtractor();
+	$result = $extractor->extract($tempFile);
+	$translations = array_column($result, 'key');
+
+	unlink($tempFile);
+	unlink($tempDir . '/blueprints/fields/writer.yml');
+	rmdir($tempDir . '/blueprints/fields');
+	rmdir($tempDir . '/blueprints');
+	rmdir($tempDir);
+
+	// blueprint reference should be filtered out
+	expect($translations)->not->toContain('fields/writer');
+	// normal translations should still be extracted
+	expect($translations)->toContain('Content');
+	expect($translations)->toContain('Description');
+	expect($translations)->toContain('Enter a description');
+});

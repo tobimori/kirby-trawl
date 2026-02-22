@@ -95,17 +95,30 @@ class TranslationManager
 		$translations = [];
 
 		foreach ($translationsByKey as $key => $data) {
-			// If this is the source language, use the key as the value
-			// Otherwise, create an empty string
-			$value = ($language === $this->sourceLanguage) ? $key : '';
-
-			$translations[$key] = $value;
+			if ($this->hasPlural($data)) {
+				$translations[$key] = ($language === $this->sourceLanguage)
+					? ['', $key]
+					: ['', ''];
+			} else {
+				$translations[$key] = ($language === $this->sourceLanguage) ? $key : '';
+			}
 		}
 
 		// Sort translations alphabetically by key
 		ksort($translations);
 
 		return $translations;
+	}
+
+	private function hasPlural(array $data): bool
+	{
+		foreach ($data['context'] ?? [] as $context) {
+			if (!empty($context['plural'])) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private function saveTranslations(array $translations, string $language): string
@@ -224,7 +237,11 @@ class TranslationManager
 
 			$missingInLanguage = [];
 			foreach ($translationsByKey as $key => $data) {
-				if (!isset($existingTranslations[$key]) || $existingTranslations[$key] === '') {
+				if (!isset($existingTranslations[$key])) {
+					$missingInLanguage[] = $key;
+				} elseif ($existingTranslations[$key] === '') {
+					$missingInLanguage[] = $key;
+				} elseif (is_array($existingTranslations[$key]) && $existingTranslations[$key] === array_fill(0, count($existingTranslations[$key]), '')) {
 					$missingInLanguage[] = $key;
 				}
 			}

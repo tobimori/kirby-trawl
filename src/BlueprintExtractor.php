@@ -2,10 +2,12 @@
 
 namespace tobimori\Trawl;
 
+use Kirby\Cms\Blueprint;
 use Kirby\Data\Yaml;
 
 class BlueprintExtractor
 {
+	private static array $blueprintCache = [];
 	private array $translatableFields = [
 		'label',
 		'title',
@@ -146,7 +148,26 @@ class BlueprintExtractor
 			return true;
 		}
 
+		// Skip blueprint extends references
+		if ($this->isBlueprint($value)) {
+			return true;
+		}
+
 		return false;
+	}
+
+	private function isBlueprint(string $value): bool
+	{
+		if (!isset(static::$blueprintCache[$value])) {
+			try {
+				Blueprint::find($value);
+				static::$blueprintCache[$value] = true;
+			} catch (\Exception) {
+				static::$blueprintCache[$value] = false;
+			}
+		}
+
+		return static::$blueprintCache[$value];
 	}
 
 	private function getContextFromPath(string $path): array
