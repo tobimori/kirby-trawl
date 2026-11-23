@@ -6,9 +6,9 @@ use Kirby\Cms\App;
 
 if (
 	version_compare(App::version() ?? '0.0.0', '5.0.0-rc.3', '<') === true ||
-	version_compare(App::version() ?? '0.0.0', '6.0.0', '>') === true
+	version_compare(App::version() ?? '0.0.0', '7.0.0', '>=') === true
 ) {
-	throw new Exception('Kirby Trawl requires Kirby 5');
+	throw new Exception('Kirby Trawl requires Kirby 5 or 6');
 }
 
 App::plugin('tobimori/trawl', [
