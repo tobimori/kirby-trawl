@@ -243,9 +243,9 @@ class Migrator
 				// Check if this line contains a translatable field
 				foreach ($translatableFields as $field) {
 					// Match field: value pattern with various quote styles
-					if (preg_match('/^(\s*' . preg_quote($field, '/') . '\s*:\s*)(.*)$/i', $line, $matches)) {
+					if (preg_match('/^(\s*([\'"]?)' . preg_quote($field, '/') . '\2\s*:\s*)(.*)$/i', $line, $matches)) {
 						$prefix = $matches[1];
-						$valuepart = $matches[2];
+						$valuepart = $matches[3];
 
 						// Extract the actual value, handling different quote styles
 						$value = null;
@@ -409,9 +409,9 @@ class Migrator
 
 			foreach ($lines as $lineNum => $line) {
 				foreach ($translatableFields as $field) {
-					if (preg_match('/^(\s*' . preg_quote($field, '/') . '\s*:\s*)(.*)$/i', $line, $matches)) {
+					if (preg_match('/^(\s*([\'"]?)' . preg_quote($field, '/') . '\2\s*:\s*)(.*)$/i', $line, $matches)) {
 						$prefix = $matches[1];
-						$valuepart = $matches[2];
+						$valuepart = $matches[3];
 
 						$value = null;
 						$newValuePart = $valuepart;
